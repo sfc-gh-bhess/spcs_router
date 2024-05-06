@@ -1,0 +1,26 @@
+REPO?=<<REPOSITORY>>
+ROUTER_IMAGE=spcs_router
+SNOWFLAKE_COMPUTE_POOL?=tutorial_compute_pool
+
+help:   ## Show this help.
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
+all: login build push
+
+login:  ## Login to Snowflake Docker repo
+	docker login $(REPO)
+
+build:  ## Build Docker image for router for Snowpark Container Services
+	docker build --platform linux/amd64 -t $(ROUTER_IMAGE) .
+
+push:  ## Push router Docker image to Snowpark Container Services
+	docker tag $(ROUTER_IMAGE) $(REPO)/$(ROUTER_IMAGE)
+	docker push $(REPO)/$(ROUTER_IMAGE)
+
+ddl:   ## Create the Router SERVICE
+	@printf "CREATE SERVICE router\n"
+	@printf "  IN COMPUTE POOL  $(SNOWFLAKE_COMPUTE_POOL)\n"
+	@printf "  FROM SPECIFICATION \$$\$$\n"
+	@cat router.yaml
+	@printf "\n  \$$\$$\n"
+	@printf ";\n"

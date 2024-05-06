@@ -1,0 +1,15 @@
+spec:
+  containers:
+    - name: router
+      image: <<REPOSITORY>>/spcs_router
+      # Enter your endpoints here
+      # The format is: epname=http://svcname:port
+      #   where svcname is the name of the SERVICE, port
+      #   is the port number for that SERVICE, and epname
+      #   is the route you want to create for that destination.
+      # args:
+      #   - endpoint1=http://service1:8080
+  endpoints:
+    - name: router
+      port: 80
+      public: true
