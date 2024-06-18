@@ -57,7 +57,7 @@ or fully-qualified DNS name (e.g., `service1` or
 
 These pairs are sent to the container as arugments in the YAML
 specification:
-```
+```yaml
 spec:
   containers:
     - name: router
@@ -69,12 +69,16 @@ spec:
     - name: router
       port: 80
       public: true
+serviceRoles:
+- name: app
+  endpoints:
+  - router
 ```
 
 The Makefile includes a `ddl` target that will show the DDL command
 template for creating the service. An example output is:
 
-```
+```sql
 CREATE SERVICE router
   IN COMPUTE POOL  tutorial_compute_pool
   FROM SPECIFICATION $$
@@ -89,6 +93,10 @@ spec:
     - name: router
       port: 80
       public: true
+serviceRoles:
+- name: app
+  endpoints:
+  - router
   $$
 ;
 ```
@@ -96,3 +104,14 @@ spec:
 If any of the proxied services need EXTERNAL ACCESS INTEGRATIONS for 
 Content Security Policy (CSP) reasons, make sure to add those to the DDL 
 for the proxy service.
+
+See that the services have started by executing 
+`SHOW SERVICES IN COMPUTE POOL tutorial_compute_pool` 
+and `SELECT system$get_service_status('router')`.
+
+Find the public endpoint for the router service by executing 
+`SHOW ENDPOINTS IN SERVICE router`.
+
+Grant permissions for folks to visit the Router. You do this by granting 
+the SERVICE ROLE: `GRANT SERVICE ROLE router!app TO ROLE some_role`, 
+where you specify the role in place of `some_role`.

@@ -13,3 +13,7 @@ spec:
     - name: router
       port: 80
       public: true
+serviceRoles:
+- name: app
+  endpoints:
+  - router
